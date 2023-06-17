@@ -1,26 +1,41 @@
 # В этом файле находится основная логика телеграмм бота
-import telebot
+import aiogram
+import time
+import logging
 
-bot = telebot.TeleBot('6031181986:AAHSbk9u58ZSbWywWe_z1KgF4_FZ2RMBbP8')
+from aiogram import Bot, Dispatcher, types,executor
 
-@bot.message_handler(commands=['start'])
-def start(message):
-    bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name} ! Я мотивационный бот! И тд текст')
+from config import *
 
-@bot.message_handler(commands=['motivation'])
-def help(message):
-    bot.send_message(message.chat.id, 'Начать работу!')
+#Привязка бота к токену
+bot = Bot(TOKEN)
+dp = Dispatcher(bot)
 
-@bot.message_handler(commands=['about'])
-def help(message):
-    bot.send_message(message.chat.id, 'Инфа о нас!')
+#Обработка команды /start
+@dp.message_handler(commands=['start'])
+async def start(message: types.Message):
+    await bot.send_message(message.chat.id, startMes)
 
-@bot.message_handler(commands=['help'])
-def help(message):
-    bot.send_message(message.chat.id, 'Инструкция тебе за щеку!')
+#Обработка команды /motivation
+@dp.message_handler(commands=['motivation'])
+async def motivation(message):
+    await bot.send_message(message.chat.id, motivationMes)
 
-@bot.message_handler()
-def error(message):
-    bot.send_message(message.chat.id, 'Ошибка, отсутсвует данная команда!')
+#Обработка команды /about
+@dp.message_handler(commands=['about'])
+async def about(message):
+    await bot.send_message(message.chat.id, aboutMes)
 
-bot.polling(none_stop=True)
+#Обработка команды /help
+@dp.message_handler(commands=['help'])
+async def help(message):
+    await bot.send_message(message.chat.id, helpMes)
+
+#Обработка неизвестных команд
+@dp.message_handler()
+async def error(message):
+    await bot.send_message(message.chat.id, errorMes)
+
+#Постоянная работа бота
+executor.start_polling(dp)
+
